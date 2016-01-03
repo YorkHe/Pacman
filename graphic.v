@@ -19,7 +19,25 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module graphic(
+    input wire clk, reset,
+    input wire [10:0] x, y,
+    input wire [3:0] btn,
+    output wire [7:0] rgb
     );
 
+    reg [7:0] rgb_now;
+
+    localparam COLOR_BG = 8'b01001000;
+    localparam COLOR_NULL = 8'b00000000;
+
+    always @(posedge clk) begin
+        if (x>=0 && y>=0 && x<640 && y<480) begin
+            rgb_now <= COLOR_BG;
+        end else begin
+            rgb_now <= COLOR_NULL;
+        end
+    end
+
+    assign rgb = rgb_now;
 
 endmodule

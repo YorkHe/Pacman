@@ -53,6 +53,9 @@ module top(
         BTNR(clk, btn[2], btn_out[2]),
         BTND(clk, btn[3], btn_out[3]),
         RES(clk, reset, reset_out);
+
+
+
     graphic g(
          .clk(clk),
          .reset(reset_out),
