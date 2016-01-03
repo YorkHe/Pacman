@@ -1,0 +1,7 @@
+*
+!.gitignore
+!*.v
+!*.ucf
+!*.coe
+!*.xise
+!*.gise
