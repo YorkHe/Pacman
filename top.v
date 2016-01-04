@@ -33,19 +33,9 @@ module top(
     output hsync, vsync;
     output [7:0] rgb;
 
-
-
-
     wire reset_out;
     wire [3:0] btn_out;
     wire [10:0] x, y;
-    vga_sync vga(
-        .clk(clk),
-        .hsync(hsync),
-        .vsync(vsync),
-        .x(x),
-        .y(y)
-    );
 
     debounce 
         BTNL(clk, btn[0], btn_out[0]),
@@ -54,15 +44,6 @@ module top(
         BTND(clk, btn[3], btn_out[3]),
         RES(clk, reset, reset_out);
 
-
-
-    graphic g(
-         .clk(clk),
-         .reset(reset_out),
-         .x(x),
-         .y(y),
-         .rgb(rgb),
-         .btn(btn_out)
-    );
+    game_ctl ctl(.clk(clk), .btn(btn_out), .reset(reset), .hsync(hsync) .vsync(vsync) .rgb(rgb));
 
 endmodule
