@@ -29,7 +29,7 @@ module debounce(
 
     localparam threshold = 10;
 
-    timer_1ms m0(clk, clk_1ms);
+    timer1ms m0(clk, clk_1ms);
 
     always @(posedge clk_1ms)
     begin
