@@ -39,6 +39,7 @@ localparam R = 4'b0010;
 localparam D = 4'b0001;
 
 wire collide_L, collide_U, collide_R, collide_D;
+wire [2:0] flag_L, flag_U, flag_R, flag_D;
 
 reg [3:0] going_direction;
 
@@ -47,6 +48,16 @@ initial begin
     p_y <= 230;
     going_direction <= 4'b1111;
 end
+
+direction_flag flag(
+    .clk(clk),
+    .x(p_x),
+    .y(p_y),
+    .flag_L(flag_L),
+    .flag_U(flag_U),
+    .flag_R(flag_R),
+    .flag_D(flag_D)
+);
 
 collision_detection(
     .clk(clk),
@@ -114,26 +125,46 @@ begin
     case(going_direction)
         4'b1000:
         begin
-            if (!collide_L)
+            if (!collide_L) begin
                 p_x <= p_x - PAC_VELOCITY;
+                if (flag_U != 0)
+                    p_y <= p_y - p_y % 12;
+                else 
+                    p_y <= p_y + 12 - p_y % 12;
+            end
         end
 
         4'b0100:
         begin
-            if (!collide_U)
+            if (!collide_U) begin
+                if (flag_L != 0)
+                    p_x <= p_x - p_x % 12;
+                else
+                    p_x <= p_x + 12 - p_x % 12;
                 p_y <= p_y - PAC_VELOCITY;
+            end
         end
 
         4'b0010:
         begin
-            if (!collide_R)
+            if (!collide_R) begin
                 p_x <= p_x + PAC_VELOCITY;
+                if (flag_U != 0)
+                    p_y <= p_y - p_y % 12;
+                else
+                    p_y <= p_y + 12 - p_y % 12;
+            end
         end
 
         4'b0001:
         begin
-            if (!collide_D)
+            if (!collide_D) begin
+                if (flag_L != 0)
+                    p_x <= p_x - p_x % 12;
+                else
+                    p_x <= p_x + 12 - p_x % 12;
                 p_y <= p_y + PAC_VELOCITY;
+            end
         end
     endcase
 end
