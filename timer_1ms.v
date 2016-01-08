@@ -31,7 +31,7 @@ module timer1ms(
     end
 
     always @(posedge clk) begin
-        if (cnt >= 50000) begin
+        if (cnt[15:0] == 60000) begin
             cnt <= 0;
             clk_1ms <= ~clk_1ms;
         end else

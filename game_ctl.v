@@ -24,8 +24,7 @@ module gameCtl(
     reset,
     hsync,
     vsync,
-    rgb,
-    score
+    rgb
     );
 
     input clk;
@@ -33,7 +32,6 @@ module gameCtl(
     input reset;
     output hsync, vsync;
     output [7:0] rgb;
-    output [15:0]score;
 
 
     wire [8:0] m1_x, m1_y, m2_x, m2_y, m3_x, m3_y;

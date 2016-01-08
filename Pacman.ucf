@@ -1,10 +1,10 @@
 NET "clk"      LOC = "V10";
 
 // buttons
-NET "btn[0]"  LOC = "C4";
-NET "btn[1]"  LOC = "A8";
-NET "btn[2]"  LOC = "D9";
-NET "btn[3]"  LOC = "C9";
+NET "btn[3]"  LOC = "C4";
+NET "btn[2]"  LOC = "A8";
+NET "btn[1]"  LOC = "D9";
+NET "btn[0]"  LOC = "C9";
 
 NET "reset"    LOC = "B8";
 

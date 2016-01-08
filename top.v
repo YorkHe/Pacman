@@ -24,9 +24,7 @@ module top(
     btn,
     hsync,
     vsync,
-    rgb,
-    segment,
-    an
+    rgb
     );
 
     input clk;
@@ -34,17 +32,9 @@ module top(
     input [3:0] btn;
     output hsync, vsync;
     output [7:0] rgb;
-    output [7:0] segment;
-    output [3:0] an;
 
     wire reset_out;
     wire [3:0] btn_out;
-    wire [15:0] score;
-
-    initial begin
-        score = 0;
-        dpdot = 0;
-    end
 
     debounce 
         BTNL(clk, btn[0], btn_out[0]),
@@ -53,22 +43,13 @@ module top(
         BTND(clk, btn[3], btn_out[3]),
         RES(clk, reset, reset_out);
 
-    seg seg_v(
-        .clk(clk),
-        .disp_num(score),
-        .dpdot(~dpdot),
-        .segment(segment),
-        .an(an)
-    );
-
     gameCtl ctl(
         .clk(clk),
         .btn(btn_out),
         .reset(reset),
         .hsync(hsync),
         .vsync(vsync),
-        .rgb(rgb),
-        .score(score)
+        .rgb(rgb)
     );
 
 endmodule
