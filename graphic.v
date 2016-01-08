@@ -43,7 +43,7 @@ localparam MAP_LU_Y = 50;
 localparam MAP_RD_X = 497;
 localparam MAP_RD_Y = 455;
 
-localparam P_WIDTH = 24;
+localparam P_WIDTH = 23;
 
 timer1ms timer(
     .clk(clk),

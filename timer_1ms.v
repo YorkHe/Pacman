@@ -23,15 +23,15 @@ module timer1ms(
     output reg clk_1ms
     );
 
-    reg [15:0] cnt;
+    reg [18:0] cnt;
 
     initial begin
-        cnt[15:0] <= 0;
+        cnt[18:0] <= 0;
         clk_1ms <= 0;
     end
 
     always @(posedge clk) begin
-        if (cnt[15:0] == 60000) begin
+        if (cnt[18:0] == 400000) begin
             cnt <= 0;
             clk_1ms <= ~clk_1ms;
         end else

@@ -40,9 +40,12 @@ localparam D = 4'b0001;
 
 wire collide_L, collide_U, collide_R, collide_D;
 
+reg [3:0] going_direction;
+
 initial begin
     p_x <= 200;
     p_y <= 230;
+    going_direction <= 4'b1111;
 end
 
 collision_detection(
@@ -83,30 +86,54 @@ begin
         4'b1000:
         begin
             if (!collide_L)
-               p_x <= p_x - PAC_VELOCITY;
+                going_direction <= L;
         end
 
         4'b0100:
         begin
             if (!collide_U)
-               p_y <= p_y - PAC_VELOCITY;
+                going_direction <= U;
         end
 
         4'b0010:
         begin
             if (!collide_R)
-              p_x <= p_x + PAC_VELOCITY;
+                going_direction <= R;
         end
 
         4'b0001:
         begin
             if (!collide_D)
-               p_y <= p_y + PAC_VELOCITY;
+                going_direction <= D;
         end
-        default:
+    endcase
+end
+
+always @(posedge clk)
+begin
+    case(going_direction)
+        4'b1000:
         begin
-            p_x <= p_x;
-            p_y <= p_y;
+            if (!collide_L)
+                p_x <= p_x - PAC_VELOCITY;
+        end
+
+        4'b0100:
+        begin
+            if (!collide_U)
+                p_y <= p_y - PAC_VELOCITY;
+        end
+
+        4'b0010:
+        begin
+            if (!collide_R)
+                p_x <= p_x + PAC_VELOCITY;
+        end
+
+        4'b0001:
+        begin
+            if (!collide_D)
+                p_y <= p_y + PAC_VELOCITY;
         end
     endcase
 end
