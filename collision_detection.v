@@ -45,79 +45,33 @@ module collision_detection(
 
 
 
-    wire [2:0] pixel_1, pixel_2, pixel_3;
+  //  wire [2:0] pixel_1, pixel_2, pixel_3;
+    reg [2:0] pixel;
+    wire [2:0] flag_L, flag_D, flag_R, flag_U;
 
-    localparam step = 12;
+    localparam step = 13;
 
-    assign collide = (pixel_1 == 0) || (pixel_2==0)|| (pixel_3==0);
+    assign collide = (pixel == 0);
+
+    direction_flag dir(
+        .clk(clk),
+        .x(p_x),
+        .y(p_y),
+        .flag_L(flag_L),
+        .flag_U(flag_U),
+        .flag_R(flag_R),
+        .flag_D(flag_D)
+    );
 
     always @(posedge clk)
     begin
         case(direction)
-            4'b1000:
-            begin
-                det_x_1 <= p_x - step;
-                det_y_1 <= p_y;
-
-                det_x_2 <= p_x - (step-4);
-                det_y_2 <= p_y + (step-4);
-
-                det_x_3 <= p_x - (step-4);
-                det_y_3 <= p_y - (step-4);
-            end
-            4'b0100:
-            begin
-                det_x_1 <= p_x;
-                det_y_1 <= p_y - step;
-
-                det_x_2 <= p_x - (step-4);
-                det_y_2 <= p_y - (step-4);
-
-                det_x_3 <= p_x + (step-4);
-                det_y_3 <= p_y - (step-4);
-            end
-            4'b0010:
-            begin
-                det_x_1 <= p_x + step;
-                det_y_1 <= p_y;
-
-                det_x_2 <= p_x + (step-4);
-                det_y_2 <= p_y - (step-4);
-
-                det_x_3 <= p_x + (step-4);
-                det_y_3 <= p_y + (step-4);
-            end
-            4'b0001:
-            begin
-                det_x_1 <= p_x;
-                det_y_1 <= p_y + step;
-
-                det_x_2 <= p_x - (step-4);
-                det_y_2 <= p_y + (step-4);
-
-                det_x_3 <= p_x + (step-4);
-                det_y_3 <= p_y + (step-4);
-            end
+            4'b1000: pixel <= flag_L;
+            4'b0100: pixel <= flag_U;
+            4'b0010: pixel <= flag_R;
+            4'b0001: pixel <= flag_D;
         endcase
     end
-
-    mapRom map_rom1(
-        det_x_1,
-        det_y_1,
-        pixel_1
-    );
-    mapRom map_rom2(
-        det_x_2,
-        det_y_2,
-        pixel_2
-    );
-    mapRom map_rom3(
-        det_x_3,
-        det_y_3,
-        pixel_3
-    );
-
-
 
 
 endmodule

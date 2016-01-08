@@ -43,7 +43,7 @@ localparam MAP_LU_Y = 50;
 localparam MAP_RD_X = 497;
 localparam MAP_RD_Y = 455;
 
-localparam P_WIDTH = 23;
+localparam P_WIDTH = 24;
 
 timer1ms timer(
     .clk(clk),
@@ -87,3 +87,43 @@ end
 assign rgb = rgb_now;
 
 endmodule
+
+module direction_flag(
+    clk,
+    x,
+    y,
+    flag_L,
+    flag_U,
+    flag_R,
+    flag_D
+);
+
+input clk;
+input [8:0] x;
+input [8:0] y;
+
+output [2:0] wire flag_L, flag_U, flag_R, flag_D;
+
+mapRom L(
+    .x(x - 12),
+    .y(y),
+    .pixel(flag_L)
+),
+    U(
+     .x(x),
+     .y(y - 12),
+     .pixel(flag_U)
+),
+    R(
+    .x(x + 12),
+    .y(y),
+    .pixel(flag_R)
+),
+    D(
+    .x(x),
+    .y(y + 12),
+    .pixel(flag_D)
+);
+
+endmodule
+
