@@ -20,16 +20,23 @@
 //////////////////////////////////////////////////////////////////////////////////
 module monster(
     clk,
+    index,
     p_x,
     p_y,
-    x,
-    y,
-    index
+    m_x,
+    m_y
     );
 
     input clk;
     input [8:0] p_x, p_y;
-    output reg [8:0] x, y;
+    output reg [8:0] m_x, m_y;
+
+    localparam MON_VELOCITY = 1;
+
+    localparam L = 4'b1000;
+    localparam U = 4'b0100;
+    localparam R = 4'b0010;
+    localparam D = 4'b0001;
 
     localparam m1_pos_x = 0;
     localparam m1_pos_y = 0;
@@ -42,21 +49,36 @@ module monster(
 
     initial begin
         case(index)
-        begin
             1: begin
-                x<=m1_pos_x;
-                y<=m1_pos_y;
+                m_x<=m1_pos_x;
+                m_y<=m1_pos_y;
             end
             2: begin
-                x<=m2_pos_x;
-                y<=m2_pos_y;
+                m_x<=m2_pos_x;
+                m_y<=m2_pos_y;
             end
             3: begin
-                x<=m3_pos_x;
-                y<=m3_pos_y;
+                m_x<=m3_pos_x;
+                m_y<=m3_pos_y;
             end
-        end
+        endcase
     end
+
+    direction_flag flag2(
+        .clk(clk),
+        .x(m_x),
+        .y(m_y),
+        .flag_L(flag_L),
+        .flag_U(flag_U),
+        .flag_R(flag_R),
+        .flag_D(flag_D)
+    );
+
+    always @(posedge clk) begin
+
+    end
+
+
 
 
 endmodule

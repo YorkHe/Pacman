@@ -33,6 +33,8 @@ wire [1:0]map_vga_pixel;
 wire [8:0] p_x, p_y;
 wire clk_1ms;
 
+wire [8:0] m_x_1, m_y_1, m_x_2, m_y_2, m_x_3, m_y_3, m_x_4, m_y_4;
+
 localparam COLOR_BG   = 8'b00000000;
 localparam COLOR_NULL = 8'b00000000;
 localparam COLOR_WALL = 8'b11010000;
@@ -49,6 +51,10 @@ timer1ms timer(
     .clk(clk),
     .clk_1ms(clk_1ms)
 );
+
+monster m1( .clk(clk_1ms), .index(1), .p_x(p_x), .p_y(p_y), .m_x(m_x_1), .m_y(m_y_1)),
+    m2( .clk(clk_1ms), .index(2), .p_x(p_x), .p_y(p_y), .m_x(m_x_2), .m_y(m_y_2)),
+    m3( .clk(clk_1ms), .index(3), .p_x(p_x), .p_y(p_y), .m_x(m_x_3), .m_y(m_y_3));
 
 pacman p(
     .clk(clk_1ms),
@@ -73,10 +79,30 @@ always @(posedge clk) begin
 
                 rgb_now <= COLOR_PACMAN;
             else begin
-                if (map_vga_pixel == 2'b00) 
-                    rgb_now <= COLOR_WALL;
-                else 
-                    rgb_now <= COLOR_NULL;
+                if (x >= (MAP_LU_X+m_x_1 - (P_WIDTH / 2)) && 
+                    y >= (MAP_LU_Y+m_y_1 - (P_WIDTH / 2)) && 
+                    x <  (MAP_LU_X+m_x_1 + (P_WIDTH / 2)) && 
+                    y <  (MAP_LU_Y+m_y_1 + (P_WIDTH / 2)))
+                    
+                    rgb_now <= COLOR_MONSTER_1;
+                else
+                    if (x >= (MAP_LU_X+m_x_2 - (P_WIDTH / 2)) && 
+                        y >= (MAP_LU_Y+m_y_2 - (P_WIDTH / 2)) && 
+                        x <  (MAP_LU_X+m_x_2 + (P_WIDTH / 2)) && 
+                        y <  (MAP_LU_Y+m_y_2 + (P_WIDTH / 2)))
+                    
+                        rgb_now <= COLOR_MONSTER_2;
+                        else
+                            if (x >= (MAP_LU_X+m_x_3 - (P_WIDTH / 2)) && 
+                                y >= (MAP_LU_Y+m_y_3 - (P_WIDTH / 2)) && 
+                                x <  (MAP_LU_X+m_x_3 + (P_WIDTH / 2)) && 
+                                y <  (MAP_LU_Y+m_y_3 + (P_WIDTH / 2)))
+                                rgb_now <= COLOR_MONSTER_3;
+                                else
+                                    if (map_vga_pixel == 2'b00) 
+                                        rgb_now <= COLOR_WALL;
+                                    else 
+                                        rgb_now <= COLOR_NULL;
             end
         end else begin
             rgb_now <= COLOR_NULL;
