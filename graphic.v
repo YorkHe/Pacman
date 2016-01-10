@@ -26,17 +26,36 @@ module graphic(
     output wire [7:0] rgb
 );
 
-reg [7:0] rgb_now;
+reg [2:0] color_type;
 
-wire [1:0]map_vga_pixel;
+wire [1:0]
+    map_vga_pixel,
+    map_vga_pixel_U,
+    map_vga_pixel_UR,
+    map_vga_pixel_R,
+    map_vga_pixel_RD,
+    map_vga_pixel_D,
+    map_vga_pixel_DL,
+    map_vga_pixel_L,
+    map_vga_pixel_LU;
 
 wire [8:0] p_x, p_y;
-wire clk_1ms;
+wire clk_1ms, clk_10mhz;
+wire wen, ren;
+wire [8:0] outdata;
 
-localparam COLOR_BG   = 8'b00000000;
-localparam COLOR_NULL = 8'b00000000;
-localparam COLOR_WALL = 8'b11010000;
-localparam COLOR_PACMAN = 8'b00111111;
+integer i;
+integer j;
+
+localparam MAP_X_LENGTH = 29;
+localparam MAP_Y_LENGTH = 34;
+
+
+localparam INDEX_BG = 0;
+localparam INDEX_NULL = 1;
+localparam INDEX_WALL = 2;
+localparam INDEX_PACMAN = 3;
+
 
 localparam MAP_LU_X = 150;
 localparam MAP_LU_Y = 50;
@@ -50,6 +69,11 @@ timer1ms timer(
     .clk_1ms(clk_1ms)
 );
 
+timer10mhz timer2(
+    .clk(clk),
+    .clk_10mhz(clk_10mhz)
+);
+
 pacman p(
     .clk(clk_1ms),
     .btn(btn),
@@ -58,10 +82,48 @@ pacman p(
 );
 
 mapRom map_rom(
-    .x(x - MAP_LU_X),
-    .y(y - MAP_LU_Y),
-    .pixel(map_vga_pixel)
+    .x(i),
+    .y(j),
+    .pixel(map_vga_pixel),
+    .pixel_U(map_vga_pixel_U),
+    .pixel_UR(map_vga_pixel_UR),
+    .pixel_R(map_vga_pixel_R),
+    .pixel_RD(map_vga_pixel_RD),
+    .pixel_D(map_vga_pixel_D),
+    .pixel_DL(map_vga_pixel_DL),
+    .pixel_L(map_vga_pixel_L),
+    .pixel_LU(map_vga_pixel_LU)
 );
+
+vram vram1(
+    .clk(clk),
+    .WEN(wen),
+    .REN(ren),
+    .inaddr_x(x),
+    .inaddr_y(y),
+    .outaddr_x(x),
+    .outaddr_y(y),
+    .indata(rgb_now),
+    .outdata(outdata)
+);
+
+always @(posedge clk_10mhz) begin
+    for (i = 0; i < 29; i = i+1)
+    begin
+        for (j = 0; j < 34; j = j+1)
+        begin
+            case (map_vga_pixel)
+                0: begin
+
+                end
+                1: begin
+
+                end
+            endcase
+        end
+    end
+end
+
 
 always @(posedge clk) begin
     if (x>=0 && y>=0 && x<640 && y<480) begin

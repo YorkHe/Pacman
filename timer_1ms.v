@@ -39,3 +39,24 @@ module timer1ms(
     end
 
 endmodule
+
+module timer10mhz(
+    input wire clk,
+    output reg clk_10mhz
+);
+    reg [3:0] cnt;
+
+    initial begin
+        cnt[3:0] <= 0;
+        clk_10mhz <= 0;
+    end
+
+    always @(posedge clk) begin
+        if (cnt = 5) begin
+            cnt <= 0;
+            clk_10mhz <= ~clk_10mhz; 
+        end else
+            cnt <= cnt + 1;
+    end
+
+endmodule

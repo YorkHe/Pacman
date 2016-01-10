@@ -21,14 +21,39 @@
 module mapRom(
     x,
     y,
+    pixel_U,
+    pixel_UR,
+    pixel_R,
+    pixel_RD,
+    pixel_D,
+    pixel_DL,
+    pixel_L,
+    pixel_LU,
     pixel
 );
 
 input [10:0] x, y;
+output [1:0]
+    pixel_U,
+    pixel_UR,
+    pixel_R,
+    pixel_RD,
+    pixel_D,
+    pixel_DL,
+    pixel_L,
+    pixel_LU,
+    pixel;
 
-output [1:0]pixel;
 
-assign pixel = map[(y/12) * 29 + (x/12)];
+assign pixel = map[y * 29 + x];
+assign pixel_U = (y >= 1)?map[(y-1) * 29 + x]:0;
+assign pixel_UR = (y >= 1 && x < 28)? map[(y-1) * 29 + (x+1)]:0;
+assign pixel_R = (x < 28) ? map[y * 29 + (x+1)] : 0;
+assign pixel_RD = (y < 33 && x < 28) ? map[(y+1) * 29 + (x+1)] : 0;
+assign pixel_D = (y < 33) ? map[(y+1) * 29 + x] : 0;
+assign pixel_DL = (y < 33 && x >= 1) ? map[(y+1) * 29 + (x-1)] : 0;
+assign pixel_L = (x >= 1) ? map[y * 29 + (x-1)] : 0;
+assign pixel_LU = (x>=1 && y>=1) ? map[(y-1) * 29 + (x-1)] : 0;
 
 reg[1:0] map[29*34:0];
 
