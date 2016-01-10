@@ -45,11 +45,9 @@ module collision_detection(
 
 
 
-  //  wire [2:0] pixel_1, pixel_2, pixel_3;
     reg [2:0] pixel;
     wire [2:0] flag_L, flag_D, flag_R, flag_U;
 
-    localparam step = 13;
 
     assign collide = (pixel == 0);
 

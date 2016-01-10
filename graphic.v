@@ -33,12 +33,15 @@ wire [1:0]map_vga_pixel;
 wire [8:0] p_x, p_y;
 wire clk_1ms;
 
-wire [8:0] m_x_1, m_y_1, m_x_2, m_y_2, m_x_3, m_y_3, m_x_4, m_y_4;
+wire [8:0] m_x_1, m_y_1, m_x_2, m_y_2, m_x_3, m_y_3;
 
 localparam COLOR_BG   = 8'b00000000;
 localparam COLOR_NULL = 8'b00000000;
 localparam COLOR_WALL = 8'b11010000;
 localparam COLOR_PACMAN = 8'b00111111;
+localparam COLOR_MONSTER_1 = 8'b01110111;
+localparam COLOR_MONSTER_2 = 8'b00111000;
+localparam COLOR_MONSTER_3 = 8'b00111010;
 
 localparam MAP_LU_X = 150;
 localparam MAP_LU_Y = 50;
