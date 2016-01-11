@@ -37,10 +37,15 @@ wire [8:0] m_x_1, m_y_1, m_x_2, m_y_2, m_x_3, m_y_3;
 
 reg [1:0] mon_id_1, mon_id_2, mon_id_3;
 
+wire [1:0] pixel_D, pixel_R, pixel_RD;
+
+wire dot, new;
+
 localparam COLOR_BG   = 8'b00000000;
 localparam COLOR_NULL = 8'b00000000;
 localparam COLOR_WALL = 8'b11010000;
 localparam COLOR_PACMAN = 8'b00111111;
+localparam COLOR_DOT    = 8'b11111111;
 localparam COLOR_MONSTER_1 = 8'b01110111;
 localparam COLOR_MONSTER_2 = 8'b00111000;
 localparam COLOR_MONSTER_3 = 8'b01011010;
@@ -82,7 +87,20 @@ pacman p(
 mapRom map_rom(
     .x(x - MAP_LU_X),
     .y(y - MAP_LU_Y),
-    .pixel(map_vga_pixel)
+    .pixel(map_vga_pixel),
+    .pixel_R(pixel_R),
+    .pixel_D(pixel_D),
+    .pixel_RD(pixel_RD)
+);
+
+dotMap dots(
+    .clk(clk),
+    .set_x(p_x),
+    .set_y(p_y),
+    .query_x(x - MAP_LU_X),
+    .query_y(y - MAP_LU_Y),
+    .dot(dot),
+    .new(new)
 );
 
 always @(posedge clk) begin
@@ -118,7 +136,19 @@ always @(posedge clk) begin
                                     if (map_vga_pixel == 2'b00) 
                                         rgb_now <= COLOR_WALL;
                                     else 
-                                        rgb_now <= COLOR_NULL;
+                                    begin
+                                        if (map_vga_pixel == 2'b01)
+                                        begin
+                                            if (pixel_R == 1 && pixel_D == 1 && pixel_RD == 1)
+                                                if((x % 12 >=11  || x % 12 <= 0) && (y % 12 >= 11 || y % 12 <= 0) && dot)
+                                                    rgb_now <= COLOR_DOT;
+                                                else 
+                                                    rgb_now <= COLOR_NULL;
+                                            else
+                                                rgb_now <= COLOR_NULL;
+                                        end else
+                                            rgb_now <= COLOR_NULL;
+                                    end
             end
         end else begin
             rgb_now <= COLOR_NULL;

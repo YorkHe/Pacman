@@ -152,7 +152,7 @@ always @(posedge clk) begin
                     else
                         going_direction <= D;
                 end
-            end
+            end 
         end
         4'b0100:
         begin
@@ -171,7 +171,7 @@ always @(posedge clk) begin
                     else
                         going_direction <= R;
                 end
-            end
+            end 
         end
         4'b0010:
         begin
@@ -190,7 +190,7 @@ always @(posedge clk) begin
                     else
                         going_direction <= D;
                 end
-            end
+            end 
         end
         4'b0001:
         begin
@@ -209,7 +209,7 @@ always @(posedge clk) begin
                     else
                         going_direction <= R;
                 end
-            end
+            end 
         end
     endcase
 end
