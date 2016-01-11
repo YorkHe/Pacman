@@ -24,7 +24,9 @@ module top(
     btn,
     hsync,
     vsync,
-    rgb
+    rgb,
+    seg,
+    an
     );
 
     input clk;
@@ -32,6 +34,8 @@ module top(
     input [3:0] btn;
     output hsync, vsync;
     output [7:0] rgb;
+    output [7:0] seg;
+    output [3:0] an;
 
     wire reset_out;
     wire [3:0] btn_out;
@@ -49,7 +53,9 @@ module top(
         .reset(reset),
         .hsync(hsync),
         .vsync(vsync),
-        .rgb(rgb)
+        .rgb(rgb),
+        .seg(seg),
+        .an(an)
     );
 
 endmodule

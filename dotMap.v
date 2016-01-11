@@ -19,6 +19,7 @@ output reg new;
 reg[1:0] map[29*34:0];
 
 initial begin
+    new = 0;
     map[0]=0;
     map[1]=0;
     map[2]=0;
@@ -1013,9 +1014,40 @@ always @(posedge clk)
 begin
     if (map[(set_y / 12) * 29 + (set_x / 12)] != 0)
     begin
-        new <= 1;
+        new <= ~new;
         map[(set_y / 12) * 29 + (set_x / 12)] <= 0;
-    end
+    end 
+    else
+        if (map[((set_y - 1) / 12) * 29 + (set_x / 12)] != 0)
+        begin
+            new <= ~new;
+            map[((set_y - 1) / 12) * 29 + (set_x / 12)] <= 0;
+        end
+        else
+            if(map[((set_y + 1) / 12) * 29 + (set_x / 12)] != 0)
+            begin
+                new <= ~new;
+                map[((set_y + 1) / 12) * 29 + (set_x / 12)] <= 0;
+            end
+            else
+                if(map[((set_y) / 12) * 29 + ((set_x - 1) / 12)] != 0)
+                begin
+                    new <= ~new;
+                    map[((set_y) / 12) * 29 + ((set_x - 1) / 12)] <= 0;
+                end
+                else 
+                    if(map[((set_y) / 12) * 29 + ((set_x + 1) / 12)] != 0)
+                    begin
+                        new <= ~new;
+                        map[((set_y) / 12) * 29 + ((set_x + 1) / 12)] <= 0;
+                    end
+                    else
+                        if(map[((set_y - 1) / 12) * 29 + ((set_x - 1) / 12)] != 0)
+                        begin
+                            new <= ~new;
+                            map[((set_y - 1) / 12) * 29 + ((set_x - 1) / 12)] <= 0;
+                        end
+ 
 end
 
 endmodule

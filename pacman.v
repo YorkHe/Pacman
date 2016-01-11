@@ -23,7 +23,8 @@ module pacman(
     clk,
     btn,
     p_x,
-    p_y
+    p_y,
+    going_direction
 );
 
 input clk_50mhz;
@@ -43,7 +44,7 @@ localparam D = 4'b0001;
 wire collide_L, collide_U, collide_R, collide_D;
 wire [2:0] flag_L, flag_U, flag_R, flag_D;
 
-reg [3:0] going_direction;
+output reg [3:0] going_direction;
 
 initial begin
     p_x <= 200;

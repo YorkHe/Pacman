@@ -23,7 +23,8 @@ module graphic(
     input wire clk, reset,
     input wire [10:0] x, y,
     input wire [3:0] btn,
-    output wire [7:0] rgb
+    output wire [7:0] rgb,
+    output new
 );
 
 reg [7:0] rgb_now;
@@ -40,6 +41,15 @@ reg [1:0] mon_id_1, mon_id_2, mon_id_3;
 wire [1:0] pixel_D, pixel_R, pixel_RD;
 
 wire dot, new;
+
+wire flag_col_1, flag_col_2, flag_col_3;
+
+wire [3:0] direction;
+
+localparam L = 4'b1000;
+localparam U = 4'b0100;
+localparam R = 4'b0010;
+localparam D = 4'b0001;
 
 localparam COLOR_BG   = 8'b00000000;
 localparam COLOR_NULL = 8'b00000000;
@@ -81,7 +91,8 @@ pacman p(
     .clk(clk_1ms),
     .btn(btn),
     .p_x(p_x),
-    .p_y(p_y)
+    .p_y(p_y),
+    .going_direction(direction)
 );
 
 mapRom map_rom(
@@ -94,13 +105,44 @@ mapRom map_rom(
 );
 
 dotMap dots(
-    .clk(clk),
+    .clk(clk_1ms),
     .set_x(p_x),
     .set_y(p_y),
     .query_x(x - MAP_LU_X),
     .query_y(y - MAP_LU_Y),
     .dot(dot),
     .new(new)
+);
+
+collision_detection 
+collide_1(
+    .clk(clk),
+    .p_x(p_x),
+    .p_y(p_y),
+    .m_x(m_x_1),
+    .m_y(m_y_1),
+    .col(flag_col_1)
+),collide_2(
+    .clk(clk),
+    .p_x(p_x),
+    .p_y(p_y),
+    .m_x(m_x_2),
+    .m_y(m_y_2),
+    .col(flag_col_2)
+),collide_3(
+    .clk(clk),
+    .p_x(p_x),
+    .p_y(p_y),
+    .m_x(m_x_3),
+    .m_y(m_y_3),
+    .col(flag_col_3)
+);
+
+mapPac pac(
+    .x(x - MAP_LU_X - p_x + (P_WIDTH / 2)),
+    .y(y - MAP_LU_Y - p_y + (P_WIDTH / 2)),
+    .direction(direction),
+    .pixel(pac_pixel)
 );
 
 always @(posedge clk) begin
@@ -111,26 +153,26 @@ always @(posedge clk) begin
                 x <  (MAP_LU_X+p_x + (P_WIDTH / 2)) && 
                 y <  (MAP_LU_Y+p_y + (P_WIDTH / 2)))
 
-                rgb_now <= COLOR_PACMAN;
+                rgb_now <= (pac_pixel == 0)?COLOR_NULL:COLOR_PACMAN;
             else begin
                 if (x >= (MAP_LU_X+m_x_1 - (P_WIDTH / 2)) && 
                     y >= (MAP_LU_Y+m_y_1 - (P_WIDTH / 2)) && 
                     x <  (MAP_LU_X+m_x_1 + (P_WIDTH / 2)) && 
-                    y <  (MAP_LU_Y+m_y_1 + (P_WIDTH / 2)))
+                    y <  (MAP_LU_Y+m_y_1 + (P_WIDTH / 2)) && !flag_col_1)
                     
                     rgb_now <= COLOR_MONSTER_1;
                 else
                     if (x >= (MAP_LU_X+m_x_2 - (P_WIDTH / 2)) && 
                         y >= (MAP_LU_Y+m_y_2 - (P_WIDTH / 2)) && 
                         x <  (MAP_LU_X+m_x_2 + (P_WIDTH / 2)) && 
-                        y <  (MAP_LU_Y+m_y_2 + (P_WIDTH / 2)))
+                        y <  (MAP_LU_Y+m_y_2 + (P_WIDTH / 2)) && !flag_col_2)
                     
                         rgb_now <= COLOR_MONSTER_2;
                         else
                             if (x >= (MAP_LU_X+m_x_3 - (P_WIDTH / 2)) && 
                                 y >= (MAP_LU_Y+m_y_3 - (P_WIDTH / 2)) && 
                                 x <  (MAP_LU_X+m_x_3 + (P_WIDTH / 2)) && 
-                                y <  (MAP_LU_Y+m_y_3 + (P_WIDTH / 2)))
+                                y <  (MAP_LU_Y+m_y_3 + (P_WIDTH / 2)) && !flag_col_3)
                                 rgb_now <= COLOR_MONSTER_3;
                                 else
                                     if (map_vga_pixel == 2'b00) 

@@ -24,7 +24,9 @@ module gameCtl(
     reset,
     hsync,
     vsync,
-    rgb
+    rgb,
+    seg,
+    an
     );
 
     input clk;
@@ -32,6 +34,8 @@ module gameCtl(
     input reset;
     output hsync, vsync;
     output [7:0] rgb;
+    output [7:0] seg;
+    output [3:0] an;
 
 
     wire [8:0] m1_x, m1_y, m2_x, m2_y, m3_x, m3_y;
@@ -39,6 +43,8 @@ module gameCtl(
     wire clk_1ms;
 
     wire [10:0] x, y;
+
+    wire new;
 
     timer1ms timer(
         .clk(clk),
@@ -52,14 +58,6 @@ module gameCtl(
         .x(x),
         .y(y)
     );
-    /*
-    monster
-        m1(.clk(clk_1ms), .p_x(p_x), .p_y(p_y), .x(m1_x), y(m1_y)),
-        m2(.clk(clk_1ms), .p_x(p_x), .p_y(p_y), .x(m2_x), y(m2_y)),
-        m3(.clk(clk_1ms), .p_x(p_x), .p_y(p_y), .x(m3_x), y(m3_y));
-
-    pacman p(.clk(clk_1ms), .btn(btn), .p_x(p_x), .p_y(p_y));
-    */
 
     graphic g(
          .clk(clk),
@@ -67,7 +65,38 @@ module gameCtl(
          .x(x),
          .y(y),
          .rgb(rgb),
-         .btn(btn)
+         .btn(btn),
+         .new(new)
     );
+
+    score_cnt sc(
+        .new(new),
+        .score(score)
+    );
+
+    seg seven_seg(
+        .clk(clk),
+        .disp_num(score),
+        .dpdot(4'b0000),
+        .segment(seg),
+        .an(an)
+    );
+
+endmodule
+
+module score_cnt(
+    new,
+    score
+);
+    input new;
+    output reg [16:0] score;
+
+    initial 
+        score <= 0;
+
+    always @(posedge new)
+    begin
+        score <= score + 10;
+    end
 
 endmodule
