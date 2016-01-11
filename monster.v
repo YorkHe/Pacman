@@ -81,10 +81,10 @@ initial begin
         end
     endcase
 
-    m_x <= 100;
-    m_y <= 30;
-    going_direction <= R;
-    rand <= {$random} % 10;
+    m_x <= 240;
+    m_y <= 240;
+    going_direction <= U;
+    rand <= {$random()} % 2;
 end
 
 
@@ -130,6 +130,7 @@ end
 always @(posedge clk_50mhz) begin
     h_direction <= (p_x - m_x >= 0)? 1 : 0;
     v_direction <= (p_y - m_y >= 0)? 1 : 0;
+    rand <= {$random()} % 2;
 end
 
 
@@ -139,7 +140,7 @@ always @(posedge clk) begin
         begin
             if (flag_L == 0)
             begin
-                if (v_direction == 1)
+                if ({$random()} % 2== 1)
                 begin
                     if (flag_D != 0)
                         going_direction <= D;
@@ -158,7 +159,7 @@ always @(posedge clk) begin
         begin
             if (flag_U == 0)
             begin
-                if (h_direction == 1)
+                if ({$random()} % 2== 1)
                 begin
                     if (flag_R != 0)
                         going_direction <= R;
@@ -177,7 +178,7 @@ always @(posedge clk) begin
         begin
             if (flag_R == 0)
             begin
-                if (v_direction == 1)
+                if ({$random()} % 2 == 1)
                 begin
                     if (flag_D != 0)
                         going_direction <= D;
@@ -196,7 +197,7 @@ always @(posedge clk) begin
         begin
             if (flag_D == 0)
             begin
-                if (h_direction == 1)
+                if ({$random()} % 2 == 1)
                 begin
                     if (flag_R != 0)
                         going_direction <= R;

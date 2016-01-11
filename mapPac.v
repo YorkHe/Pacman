@@ -76,6 +76,20 @@ localparam PAC_LEFT = {
         12'b000000000000,
         12'b000000000000
     };
+    localparam PAC_DEFAULT = {
+        12'b000111110000,
+        12'b011111111100,
+        12'b011111111110,
+        12'b111111111111,
+        12'b111111111111,
+        12'b111111111111,
+        12'b111111111111,
+        12'b111111111111,
+        12'b111111111111,
+        12'b011111111110,
+        12'b001111111000,
+        12'b000011100000
+    };
 
     always @*
     begin
@@ -95,6 +109,10 @@ localparam PAC_LEFT = {
             D:
             begin
                 pixel <= PAC_DOWN[(y / 2) * 12 + (x / 2)];
+            end
+            default: 
+            begin
+                pixel <= PAC_DEFAULT[(y/2) * 12 + (x/2)];
             end
         endcase
     end

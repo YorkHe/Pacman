@@ -83,8 +83,8 @@ timer1ms timer(
 );
 
 monster m1(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_1), .p_x(p_x), .p_y(p_y), .m_x(m_x_1), .m_y(m_y_1)),
-    m2(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_2), .p_x(p_x), .p_y(p_y), .m_x(m_x_2), .m_y(m_y_2)),
-    m3(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_3), .p_x(p_x), .p_y(p_y), .m_x(m_x_3), .m_y(m_y_3));
+m2(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_2), .p_x(p_x), .p_y(p_y), .m_x(m_x_2), .m_y(m_y_2)),
+m3(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_3), .p_x(p_x), .p_y(p_y), .m_x(m_x_3), .m_y(m_y_3));
 
 pacman p(
     .clk_50mhz(clk),

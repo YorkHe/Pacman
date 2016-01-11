@@ -1047,7 +1047,7 @@ begin
                             new <= ~new;
                             map[((set_y - 1) / 12) * 29 + ((set_x - 1) / 12)] <= 0;
                         end
- 
+
 end
 
 endmodule

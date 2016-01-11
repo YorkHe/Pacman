@@ -34,7 +34,7 @@ output col;
 
 integer distance;
 
-assign col = (distance < 12);
+assign col = (distance < 144);
 
 always @(posedge clk)
 begin
