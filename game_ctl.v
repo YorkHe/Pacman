@@ -44,7 +44,8 @@ module gameCtl(
 
     wire [10:0] x, y;
 
-    wire new;
+    wire [15:0] score;
+
 
     timer1ms timer(
         .clk(clk),
@@ -66,12 +67,7 @@ module gameCtl(
          .y(y),
          .rgb(rgb),
          .btn(btn),
-         .new(new)
-    );
-
-    score_cnt sc(
-        .new(new),
-        .score(score)
+         .score(score)
     );
 
     seg seven_seg(
@@ -84,19 +80,3 @@ module gameCtl(
 
 endmodule
 
-module score_cnt(
-    new,
-    score
-);
-    input new;
-    output reg [16:0] score;
-
-    initial 
-        score <= 0;
-
-    always @(posedge new)
-    begin
-        score <= score + 10;
-    end
-
-endmodule

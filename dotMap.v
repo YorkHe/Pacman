@@ -7,19 +7,19 @@ module dotMap(
     query_x,
     query_y,
     dot,
-    new
+    score
 );
 
 input clk;
 input [10:0] set_x, set_y, query_x, query_y;
 
 output dot;
-output reg new;
+output reg [15:0] score;
 
 reg[1:0] map[29*34:0];
 
 initial begin
-    new = 0;
+    score = 0;
     map[0]=0;
     map[1]=0;
     map[2]=0;
@@ -1014,37 +1014,36 @@ always @(posedge clk)
 begin
     if (map[(set_y / 12) * 29 + (set_x / 12)] != 0)
     begin
-        new <= ~new;
+        score <= score + 10;
         map[(set_y / 12) * 29 + (set_x / 12)] <= 0;
     end 
     else
         if (map[((set_y - 1) / 12) * 29 + (set_x / 12)] != 0)
         begin
-            new <= ~new;
+            score <= score + 10;
             map[((set_y - 1) / 12) * 29 + (set_x / 12)] <= 0;
         end
         else
             if(map[((set_y + 1) / 12) * 29 + (set_x / 12)] != 0)
             begin
-                new <= ~new;
+                score <= score + 10;
                 map[((set_y + 1) / 12) * 29 + (set_x / 12)] <= 0;
             end
             else
                 if(map[((set_y) / 12) * 29 + ((set_x - 1) / 12)] != 0)
                 begin
-                    new <= ~new;
+                    score <= score + 10;
                     map[((set_y) / 12) * 29 + ((set_x - 1) / 12)] <= 0;
                 end
                 else 
                     if(map[((set_y) / 12) * 29 + ((set_x + 1) / 12)] != 0)
                     begin
-                        new <= ~new;
                         map[((set_y) / 12) * 29 + ((set_x + 1) / 12)] <= 0;
                     end
                     else
                         if(map[((set_y - 1) / 12) * 29 + ((set_x - 1) / 12)] != 0)
                         begin
-                            new <= ~new;
+                            score <= score + 10;
                             map[((set_y - 1) / 12) * 29 + ((set_x - 1) / 12)] <= 0;
                         end
 

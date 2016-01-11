@@ -24,7 +24,7 @@ module graphic(
     input wire [10:0] x, y,
     input wire [3:0] btn,
     output wire [7:0] rgb,
-    output new
+    output wire [15:0] score
 );
 
 reg [7:0] rgb_now;
@@ -40,7 +40,7 @@ reg [1:0] mon_id_1, mon_id_2, mon_id_3;
 
 wire [1:0] pixel_D, pixel_R, pixel_RD;
 
-wire dot, new;
+wire dot;
 
 wire flag_col_1, flag_col_2, flag_col_3;
 
@@ -111,7 +111,7 @@ dotMap dots(
     .query_x(x - MAP_LU_X),
     .query_y(y - MAP_LU_Y),
     .dot(dot),
-    .new(new)
+    .score(score)
 );
 
 collision_detection 
@@ -145,6 +145,10 @@ mapPac pac(
     .pixel(pac_pixel)
 );
 
+wire gameover;
+
+assign gameover = flag_col_1 || flag_col_2 || flag_col_3;
+
 always @(posedge clk) begin
     if (x>=0 && y>=0 && x<640 && y<480) begin
         if (x>=MAP_LU_X && y>=MAP_LU_Y && x < MAP_RD_X && y < MAP_RD_Y) begin
@@ -158,25 +162,29 @@ always @(posedge clk) begin
                 if (x >= (MAP_LU_X+m_x_1 - (P_WIDTH / 2)) && 
                     y >= (MAP_LU_Y+m_y_1 - (P_WIDTH / 2)) && 
                     x <  (MAP_LU_X+m_x_1 + (P_WIDTH / 2)) && 
-                    y <  (MAP_LU_Y+m_y_1 + (P_WIDTH / 2)) && !flag_col_1)
+                    y <  (MAP_LU_Y+m_y_1 + (P_WIDTH / 2)) && !gameover)
                     
                     rgb_now <= COLOR_MONSTER_1;
                 else
                     if (x >= (MAP_LU_X+m_x_2 - (P_WIDTH / 2)) && 
                         y >= (MAP_LU_Y+m_y_2 - (P_WIDTH / 2)) && 
                         x <  (MAP_LU_X+m_x_2 + (P_WIDTH / 2)) && 
-                        y <  (MAP_LU_Y+m_y_2 + (P_WIDTH / 2)) && !flag_col_2)
+                        y <  (MAP_LU_Y+m_y_2 + (P_WIDTH / 2)) && !gameover)
                     
                         rgb_now <= COLOR_MONSTER_2;
                         else
                             if (x >= (MAP_LU_X+m_x_3 - (P_WIDTH / 2)) && 
                                 y >= (MAP_LU_Y+m_y_3 - (P_WIDTH / 2)) && 
                                 x <  (MAP_LU_X+m_x_3 + (P_WIDTH / 2)) && 
-                                y <  (MAP_LU_Y+m_y_3 + (P_WIDTH / 2)) && !flag_col_3)
+                                y <  (MAP_LU_Y+m_y_3 + (P_WIDTH / 2)) && !gameover)
                                 rgb_now <= COLOR_MONSTER_3;
                                 else
                                     if (map_vga_pixel == 2'b00) 
-                                        rgb_now <= COLOR_WALL;
+                                        if (!gameover)
+                                            rgb_now <= COLOR_WALL;
+                                        else begin
+                                            rgb_now <= COLOR_DOT;
+                                        end
                                     else 
                                     begin
                                         if (map_vga_pixel == 2'b01)
