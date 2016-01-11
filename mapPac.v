@@ -1,14 +1,20 @@
 module mapPac(
+    clk,
     x,
     y,
     direction,
     pixel
 );
 
+input clk;
 input [4:0] x,y;
 input [3:0] direction;
 
 output reg pixel;
+
+reg [23: 0] counter;
+reg flag;
+
 
 localparam L = 4'b1000;
 localparam U = 4'b0100;
@@ -91,24 +97,52 @@ localparam PAC_LEFT = {
         12'b000011100000
     };
 
-    always @*
+    initial begin
+        counter = 0;
+        flag = 0;
+    end
+
+    always @(posedge clk)
+    begin
+        if (counter == 10000000)
+        begin
+            counter <= 0;
+            flag <= ~flag;
+        end
+        else
+            counter <= counter + 1;
+    end
+
+    always @(posedge clk)
     begin
         case (direction)
             L:
             begin
-                pixel <= PAC_LEFT[(y / 2) * 12 + (x / 2)];
+                if (flag)
+                    pixel <= PAC_LEFT[(y / 2) * 12 + (x / 2)];
+                else
+                    pixel <= PAC_DEFAULT[(y/2) * 12 + (x/2)];
             end
             U:
             begin
-                pixel <= PAC_UP[(y / 2) * 12 + (x / 2)];
+                if (flag)
+                    pixel <= PAC_UP[(y / 2) * 12 + (x / 2)];
+                else
+                    pixel <= PAC_DEFAULT[(y/2) * 12 + (x/2)];
             end
             R:
             begin
-                pixel <= PAC_RIGHT[(y / 2) * 12 + (x / 2)];
+                if (flag)
+                    pixel <= PAC_RIGHT[(y / 2) * 12 + (x / 2)];
+                else
+                    pixel <= PAC_DEFAULT[(y/2) * 12 + (x/2)];
             end
             D:
             begin
-                pixel <= PAC_DOWN[(y / 2) * 12 + (x / 2)];
+                if (flag)
+                    pixel <= PAC_DOWN[(y / 2) * 12 + (x / 2)];
+                else
+                    pixel <= PAC_DEFAULT[(y/2) * 12 + (x/2)];
             end
             default: 
             begin

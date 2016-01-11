@@ -99,34 +99,6 @@ direction_flag flag2(
     .flag_D(flag_D)
 );
 
-always @(posedge clk) begin
-    case (going_direction)
-        4'b1000:
-        begin
-            if (flag_L != 0) begin
-                m_x <= m_x - MON_VELOCITY;
-            end 
-        end
-        4'b0100:
-        begin
-            if (flag_U != 0) begin
-                m_y <= m_y - MON_VELOCITY;
-            end 
-        end
-        4'b0010:
-        begin
-            if (flag_R != 0) begin
-                m_x <= m_x + MON_VELOCITY;
-            end 
-        end
-        4'b0001:
-        begin
-            if (flag_D != 0) begin
-                m_y <= m_y + MON_VELOCITY;
-            end 
-        end
-    endcase
-end
 
 always @(posedge clk_50mhz) begin
     h_direction <= (p_x - m_x >= 0)? 1 : 0;
@@ -140,7 +112,7 @@ always @(posedge clk) begin
         begin
             if (flag_L == 0)
             begin
-                if (v_direction== 1)
+                if (p_y - m_y >= 0)
                 begin
                     if (flag_D != 0)
                         going_direction <= D;
@@ -153,13 +125,14 @@ always @(posedge clk) begin
                     else
                         going_direction <= D;
                 end
-            end 
+            end else
+                m_x <= m_x - MON_VELOCITY;
         end
         4'b0100:
         begin
             if (flag_U == 0)
             begin
-                if (h_direction== 1)
+                if (p_x - m_x >= 0)
                 begin
                     if (flag_R != 0)
                         going_direction <= R;
@@ -172,13 +145,14 @@ always @(posedge clk) begin
                     else
                         going_direction <= R;
                 end
-            end 
+            end else
+                m_y <= m_y - MON_VELOCITY;
         end
         4'b0010:
         begin
             if (flag_R == 0)
             begin
-                if (v_direction == 0)
+                if (p_y - m_y >= 0)
                 begin
                     if (flag_D != 0)
                         going_direction <= D;
@@ -191,13 +165,14 @@ always @(posedge clk) begin
                     else
                         going_direction <= D;
                 end
-            end 
+            end else
+                m_x <= m_x + MON_VELOCITY;
         end
         4'b0001:
         begin
             if (flag_D == 0)
             begin
-                if (h_direction == 0)
+                if (p_x - m_x >= 0)
                 begin
                     if (flag_R != 0)
                         going_direction <= R;
@@ -210,7 +185,8 @@ always @(posedge clk) begin
                     else
                         going_direction <= R;
                 end
-            end 
+            end else
+                m_y <= m_y + MON_VELOCITY;
         end
     endcase
 end

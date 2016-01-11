@@ -66,19 +66,19 @@ module seg(
     always @(*) begin
         case(nan)
             4'b0001:begin
-                digit = disp_current[3:0];
+                digit = disp_current%10;
                 dot = dpdot[0];
             end
             4'b0010:begin
-                digit = disp_current[7:4];
+                digit = (disp_current/10)%10;
                 dot = dpdot[1];
             end
             4'b0100:begin
-                digit = disp_current[11:8];
+                digit = (disp_current / 100) %10;
                 dot = dpdot[2];
             end
             4'b1000:begin
-                digit = disp_current[15:12];
+                digit = (disp_current / 1000) % 10;
                 dot = dpdot[3];
             end
         endcase
