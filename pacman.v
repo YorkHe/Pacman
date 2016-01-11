@@ -19,12 +19,14 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module pacman(
+    clk_50mhz,
     clk,
     btn,
     p_x,
     p_y
 );
 
+input clk_50mhz;
 input clk;
 input [3:0] btn;
 output reg [8:0] p_x;
@@ -50,7 +52,7 @@ initial begin
 end
 
 direction_flag flag(
-    .clk(clk),
+    .clk(clk_50mhz),
     .x(p_x),
     .y(p_y),
     .flag_L(flag_L),
@@ -59,62 +61,31 @@ direction_flag flag(
     .flag_D(flag_D)
 );
 
-collision_detection(
-    .clk(clk),
-    .direction(L),
-    .p_x(p_x),
-    .p_y(p_y),
-    .collide(collide_L)
-);
 
-collision_detection(
-    .clk(clk),
-    .direction(U),
-    .p_x(p_x),
-    .p_y(p_y),
-    .collide(collide_U)
-);
-
-collision_detection(
-    .clk(clk),
-    .direction(R),
-    .p_x(p_x),
-    .p_y(p_y),
-    .collide(collide_R)
-);
-
-collision_detection(
-    .clk(clk),
-    .direction(D),
-    .p_x(p_x),
-    .p_y(p_y),
-    .collide(collide_D)
-);
-
-always @(posedge clk)
+always @(posedge clk_50mhz)
 begin
     case(btn)
         4'b1000:
         begin
-            if (!collide_L)
+            if (flag_L != 0)
                 going_direction <= L;
         end
 
         4'b0100:
         begin
-            if (!collide_U)
+            if (flag_U != 0)
                 going_direction <= U;
         end
 
         4'b0010:
         begin
-            if (!collide_R)
+            if (flag_R != 0)
                 going_direction <= R;
         end
 
         4'b0001:
         begin
-            if (!collide_D)
+            if (flag_D != 0)
                 going_direction <= D;
         end
     endcase
@@ -125,46 +96,30 @@ begin
     case(going_direction)
         4'b1000:
         begin
-            if (!collide_L) begin
+            if (flag_L != 0) begin
                 p_x <= p_x - PAC_VELOCITY;
-                if (flag_U != 0)
-                    p_y <= p_y - p_y % 12;
-                else 
-                    p_y <= p_y + 12 - p_y % 12;
-            end
+            end 
         end
 
         4'b0100:
         begin
-            if (!collide_U) begin
-                if (flag_L != 0)
-                    p_x <= p_x - p_x % 12;
-                else
-                    p_x <= p_x + 12 - p_x % 12;
+            if (flag_U != 0) begin
                 p_y <= p_y - PAC_VELOCITY;
-            end
+            end 
         end
 
         4'b0010:
         begin
-            if (!collide_R) begin
+            if (flag_R != 0) begin
                 p_x <= p_x + PAC_VELOCITY;
-                if (flag_U != 0)
-                    p_y <= p_y - p_y % 12;
-                else
-                    p_y <= p_y + 12 - p_y % 12;
-            end
+            end 
         end
 
         4'b0001:
         begin
-            if (!collide_D) begin
-                if (flag_L != 0)
-                    p_x <= p_x - p_x % 12;
-                else
-                    p_x <= p_x + 12 - p_x % 12;
+            if (flag_D != 0) begin
                 p_y <= p_y + PAC_VELOCITY;
-            end
+            end 
         end
     endcase
 end
