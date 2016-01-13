@@ -21,7 +21,8 @@
 module monster(
     clk_50mhz,
     clk,
-    index,
+    gameover,
+    ind,
     p_x,
     p_y,
     m_x,
@@ -30,7 +31,8 @@ module monster(
 
 input clk_50mhz;
 input clk;
-input [1:0] index;
+input gameover;
+input [1:0] ind;
 input [8:0] p_x, p_y;
 output reg [8:0] m_x, m_y;
 
@@ -64,28 +66,25 @@ reg [1:0] rand;
 
 
 initial begin
-    case(index)
-        MON_ID_1: begin
-            m_x<=m1_pos_x;
-            m_y<=m1_pos_y;
-            going_direction <= U;
-        end
-        MON_ID_2: begin
-            m_x<=m2_pos_x;
-            m_y<=m2_pos_y;
-            going_direction <= L;
-        end
-        MON_ID_3: begin
-            m_x<=m3_pos_x;
-            m_y<=m3_pos_y;
-            going_direction <= R;
-        end
-    endcase
 
-    m_x <= 180;
-    m_y <= 180;
-    going_direction <= U;
-    rand <= {$random()} % 2;
+    if (ind == MON_ID_1)
+    begin
+        m_x <= m1_pos_x;
+        m_y <= m1_pos_y;
+        going_direction <= U;
+    end else
+        if (ind == MON_ID_2)
+        begin
+            m_x <= m2_pos_x;
+            m_y <= m2_pos_y;
+            going_direction <= L;
+        end else
+            if (ind == MON_ID_3)
+            begin
+                m_x <= m3_pos_x;
+                m_y <= m3_pos_y;
+                going_direction <= R;
+            end
 end
 
 

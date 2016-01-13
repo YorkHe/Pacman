@@ -27,7 +27,7 @@ module debounce(
     reg[3:0] cnt;
     wire clk_1ms;
 
-    localparam threshold = 10;
+    localparam threshold = 3;
 
     timer1ms m0(clk, clk_1ms);
 

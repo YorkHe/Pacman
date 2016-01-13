@@ -33,6 +33,7 @@ wire [1:0]map_vga_pixel;
 
 wire [8:0] p_x, p_y;
 wire clk_1ms;
+wire clk_25mhz;
 
 wire [8:0] m_x_1, m_y_1, m_x_2, m_y_2, m_x_3, m_y_3;
 
@@ -45,6 +46,10 @@ wire dot;
 wire flag_col_1, flag_col_2, flag_col_3;
 
 wire [3:0] direction;
+
+wire [2:0] monster_1_pixel, monster_2_pixel, monster_3_pixel;
+
+wire gameover;
 
 localparam L = 4'b1000;
 localparam U = 4'b0100;
@@ -59,6 +64,7 @@ localparam COLOR_DOT    = 8'b11111111;
 localparam COLOR_MONSTER_1 = 8'b01110111;
 localparam COLOR_MONSTER_2 = 8'b00111000;
 localparam COLOR_MONSTER_3 = 8'b01011010;
+localparam COLOR_EYE = 8'b11010000;
 
 localparam MAP_LU_X = 150;
 localparam MAP_LU_Y = 50;
@@ -82,13 +88,19 @@ timer1ms timer(
     .clk_1ms(clk_1ms)
 );
 
-monster m1(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_1), .p_x(p_x), .p_y(p_y), .m_x(m_x_1), .m_y(m_y_1)),
-    m2(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_2), .p_x(p_x), .p_y(p_y), .m_x(m_x_2), .m_y(m_y_2)),
-    m3(.clk_50mhz(clk), .clk(clk_1ms), .index(mon_id_3), .p_x(p_x), .p_y(p_y), .m_x(m_x_3), .m_y(m_y_3));
+timer25mhz timer_25(
+    .clk(clk),
+    .clk_25mhz(clk_25mhz)
+);
+
+monster m1(.clk_50mhz(clk), .clk(clk_1ms), .gameover(gameover), .ind(mon_id_1), .p_x(p_x), .p_y(p_y), .m_x(m_x_1), .m_y(m_y_1)),
+    m2(.clk_50mhz(clk), .clk(clk_1ms), .gameover(gameover), .ind(mon_id_2), .p_x(p_x), .p_y(p_y), .m_x(m_x_2), .m_y(m_y_2)),
+    m3(.clk_50mhz(clk), .clk(clk_1ms), .gameover(gameover),.ind(mon_id_3), .p_x(p_x), .p_y(p_y), .m_x(m_x_3), .m_y(m_y_3));
 
 pacman p(
     .clk_50mhz(clk),
     .clk(clk_1ms),
+    .gameover(gameover),
     .btn(btn),
     .p_x(p_x),
     .p_y(p_y),
@@ -138,7 +150,7 @@ collide_1(
     .col(flag_col_3)
 );
 
-mapPac pac(
+pac_ROM pac(
     .clk(clk),
     .x(x - MAP_LU_X - p_x + (P_WIDTH / 2)),
     .y(y - MAP_LU_Y - p_y + (P_WIDTH / 2)),
@@ -146,13 +158,43 @@ mapPac pac(
     .pixel(pac_pixel)
 );
 
-wire gameover;
+monster_ROM
+monster1(
+    .x(x - MAP_LU_X - m_x_1 + (P_WIDTH / 2)),
+    .y(y - MAP_LU_Y - m_y_1 + (P_WIDTH / 2)),
+    .pixel(monster_1_pixel)
+),monster2(
+    .x(x - MAP_LU_X - m_x_2 + (P_WIDTH / 2)),
+    .y(y - MAP_LU_Y - m_y_2 + (P_WIDTH / 2)),
+    .pixel(monster_2_pixel)
+),monster3(
+    .x(x - MAP_LU_X - m_x_3 + (P_WIDTH / 2)),
+    .y(y - MAP_LU_Y - m_y_3 + (P_WIDTH / 2)),
+    .pixel(monster_3_pixel)
+);
+
+gameover_ROM(
+    .x(x - MAP_LU_X - 200),
+    .y(y - MAP_LU_Y - 200),
+    .pixel(gameover_pixel)
+);
+
+
 
 assign gameover = flag_col_1 || flag_col_2 || flag_col_3;
 
-always @(posedge clk) begin
+
+always @(posedge clk_25mhz) begin
     if (x>=0 && y>=0 && x<640 && y<480) begin
         if (x>=MAP_LU_X && y>=MAP_LU_Y && x < MAP_RD_X && y < MAP_RD_Y) begin
+            if ( x >= (MAP_LU_X + 200) && 
+                 y >= (MAP_LU_Y + 200) &&
+                 x < (MAP_LU_X + 400) &&
+                 y < (MAP_LU_Y + 280) && gameover)
+
+                 rgb_now <= gameover_pixel;
+
+            else
             if (x >= (MAP_LU_X+p_x - (P_WIDTH / 2)) && 
                 y >= (MAP_LU_Y+p_y - (P_WIDTH / 2)) && 
                 x <  (MAP_LU_X+p_x + (P_WIDTH / 2)) && 
@@ -165,20 +207,29 @@ always @(posedge clk) begin
                     x <  (MAP_LU_X+m_x_1 + (P_WIDTH / 2)) && 
                     y <  (MAP_LU_Y+m_y_1 + (P_WIDTH / 2)) && !gameover)
                     
-                    rgb_now <= COLOR_MONSTER_1;
+                    rgb_now <= (monster_1_pixel == 1)
+                                ?COLOR_NULL:(monster_1_pixel == 0)
+                                ?COLOR_MONSTER_1:(monster_1_pixel == 2)
+                                ?COLOR_DOT:COLOR_EYE;
                 else
                     if (x >= (MAP_LU_X+m_x_2 - (P_WIDTH / 2)) && 
                         y >= (MAP_LU_Y+m_y_2 - (P_WIDTH / 2)) && 
                         x <  (MAP_LU_X+m_x_2 + (P_WIDTH / 2)) && 
                         y <  (MAP_LU_Y+m_y_2 + (P_WIDTH / 2)) && !gameover)
-                    
-                        rgb_now <= COLOR_MONSTER_2;
+
+                        rgb_now <= (monster_2_pixel ==1)
+                                    ?COLOR_NULL:(monster_2_pixel == 0)
+                                    ?COLOR_MONSTER_2:(monster_2_pixel == 2)
+                                    ?COLOR_DOT:COLOR_EYE;
                         else
                             if (x >= (MAP_LU_X+m_x_3 - (P_WIDTH / 2)) && 
                                 y >= (MAP_LU_Y+m_y_3 - (P_WIDTH / 2)) && 
                                 x <  (MAP_LU_X+m_x_3 + (P_WIDTH / 2)) && 
                                 y <  (MAP_LU_Y+m_y_3 + (P_WIDTH / 2)) && !gameover)
-                                rgb_now <= COLOR_MONSTER_3;
+                                rgb_now <= (monster_3_pixel ==1)
+                                            ?COLOR_NULL:(monster_3_pixel == 0)
+                                            ?COLOR_MONSTER_3:(monster_3_pixel == 2)
+                                            ?COLOR_DOT:COLOR_EYE;
                                 else
                                     if (map_vga_pixel == 2'b00) 
                                         if (!gameover)

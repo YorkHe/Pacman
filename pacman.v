@@ -21,6 +21,7 @@
 module pacman(
     clk_50mhz,
     clk,
+    gameover,
     btn,
     p_x,
     p_y,
@@ -29,6 +30,7 @@ module pacman(
 
 input clk_50mhz;
 input clk;
+input gameover;
 input [3:0] btn;
 output reg [8:0] p_x;
 output reg [8:0] p_y;
